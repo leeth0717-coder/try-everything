@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장석남, '배를 밀며' 심층 분석 퀴즈</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+        }
+        .quiz-container {
+            transition: opacity 0.5s ease-in-out;
+        }
+        .option-btn {
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .correct {
+            background-color: #22c55e !important; /* Tailwind green-500 */
+            color: white;
+            border-color: #16a34a;
+        }
+        .incorrect {
+            background-color: #ef4444 !important; /* Tailwind red-500 */
+            color: white;
+            border-color: #dc2626;
+        }
+        .explanation {
+            border-left: 4px solid #3b82f6; /* Tailwind blue-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white rounded-2xl shadow-2xl p-6 md:p-10 w-full max-w-3xl mx-auto">
+        
+        <!-- 퀴즈 헤더 -->
+        <header class="text-center border-b pb-6 mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">장석남, '배를 밀며'</h1>
+            <p class="text-lg text-gray-600 mt-2">심층 분석 퀴즈 (New Ver.)</p>
+        </header>
+
+        <!-- 시 본문 (참고용) -->
+        <div class="mb-8 p-4 bg-gray-50 rounded-lg text-gray-700">
+            <h3 class="font-bold mb-2 text-center text-gray-800">시 전문</h3>
+            <blockquote class="text-center italic leading-relaxed">
+                배를 민다<br>
+                배를 밀어보는 것은 아주 드문 경험<br>
+                희번덕이는 잔잔한 가을 바닷물 위에<br>
+                배를 밀어넣고는<br>
+                온몸이 아주 추락하지 않을 순간의 한 허공에서<br>
+                밀던 힘을 한껏 더해 밀어주고는<br>
+                아슬아슬히 배에서 떨어진 손, 순간 환해진 손을<br>
+                허공으로부터 거둔다<br>
+                <br>
+                사랑은 참 부드럽게도 떠나지<br>
+                뵈지도 않는 길을 부드럽게도<br>
+                <br>
+                배를 한껏 세게 밀어내듯이 슬픔도<br>
+                그렇게 밀어내는 것이지<br>
+                <br>
+                배가 나가고 남은 빈 물 위의 흉터<br>
+                잠시 머물다 가라앉고<br> 
+                <br>
+                그런데 오, 내 안으로 들어오는 배여<br>
+                아무 소리없이 밀려들어오는 배여
+            </blockquote>
+        </div>
+
+        <!-- 퀴즈 영역 -->
+        <div id="quiz-container" class="quiz-container">
+            <div id="question-area" class="mb-6">
+                <p id="question-number" class="text-blue-600 font-bold mb-2">문제 1</p>
+                <h2 id="question-text" class="text-xl md:text-2xl font-semibold text-gray-900">퀴즈 질문이 여기에 표시됩니다.</h2>
+            </div>
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 선택지 버튼이 여기에 동적으로 추가됩니다. -->
+            </div>
+            <div id="feedback-area" class="mt-6" style="display: none;">
+                <p id="feedback-text" class="text-lg font-bold mb-2"></p>
+                <div id="explanation" class="explanation bg-blue-50 p-4 rounded-md text-gray-800">
+                    <!-- 해설이 여기에 표시됩니다. -->
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button id="next-btn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-blue-700 transition duration-300" style="display: none;">다음 문제</button>
+            </div>
+        </div>
+
+        <!-- 결과 영역 -->
+        <div id="result-container" class="text-center" style="display: none;">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">퀴즈 완료!</h2>
+            <p id="score-text" class="text-2xl text-gray-700 mb-8">총 10문제 중 8문제를 맞혔습니다.</p>
+            <button id="retry-btn" class="bg-green-500 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-green-600 transition duration-300">다시 풀기</button>
+        </div>
+
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "이 시에서 '배를 미는 행위'가 상징하는 바로 가장 적절한 것은?",
+                options: ["과거에 대한 집착", "사랑과 슬픔을 떠나보내는 결단", "새로운 만남에 대한 기대", "물리적인 노동의 고됨"],
+                answer: "사랑과 슬픔을 떠나보내는 결단",
+                explanation: "시에서 화자는 '사랑은 참 부드럽게도 떠나지', '슬픔도 그렇게 밀어내는 것이지'라고 말하며, 배를 미는 행위를 사랑과 슬픔 같은 내면의 감정을 의지적으로 떠나보내는 행위로 연결하고 있습니다."
+            },
+            {
+                question: "'순간 환해진 손'이라는 표현을 통해 화자가 느끼는 감정으로 가장 적절한 것은?",
+                options: ["떠나보낸 대상에 대한 분노", "이별의 행위를 통한 깨달음과 해방감", "극심한 상실감과 고통", "미래에 대한 불안감"],
+                answer: "이별의 행위를 통한 깨달음과 해방감",
+                explanation: "대상을 떠나보내는 손이 '환해졌다'는 것은, 이별의 행위를 통해 역설적으로 어떤 해방감이나 새로운 깨달음의 경지에 이르렀음을 시각적으로 보여주는 탁월한 표현입니다."
+            },
+            {
+                question: "이 시에서 화자가 '슬픔'을 다루는 방식은 무엇과 유사하다고 말하고 있나요?",
+                options: ["배를 기다리는 것", "배를 만드는 것", "배를 한껏 세게 밀어내는 것", "배에 타는 것"],
+                answer: "배를 한껏 세게 밀어내는 것",
+                explanation: "시인은 '배를 한껏 세게 밀어내듯이 슬픔도 그렇게 밀어내는 것이지'라고 명확히 언급하며, 슬픔을 극복하는 의지적인 태도를 배를 미는 행위에 빗대어 표현합니다."
+            },
+            {
+                question: "'배가 나가고 남은 빈 물 위의 흉터'가 의미하는 바로 가장 적절한 것은?",
+                options: ["영원히 치유되지 않는 상처", "이별 후 남는 일시적인 아픔의 기억", "새로운 시작을 위한 빈 공간", "환경 파괴에 대한 경고"],
+                answer: "이별 후 남는 일시적인 아픔의 기억",
+                explanation: "'흉터'는 아픔을 상징하지만, '물 위'에 있어 '잠시 머물다 가라앉는다'는 점에서 이별의 아픔이 영원하지 않고 시간이 지나면 사라지는 일시적인 것임을 암시합니다."
+            },
+            {
+                question: "시의 마지막 부분에서 '내 안으로 들어오는 배'는 무엇을 상징할까요?",
+                options: ["떠나간 사랑의 귀환", "새로운 사랑의 시작", "이별을 통해 얻은 내면적 성숙과 성찰", "극복하지 못한 슬픔의 재현"],
+                answer: "이별을 통해 얻은 내면적 성숙과 성찰",
+                explanation: "외부의 '배'를 밀어낸 자리에, 소리 없이 들어오는 내부의 '배'는 대상을 떠나보낸 후 자신에게 남겨진 것, 즉 이별의 경험을 통해 얻게 된 깊은 성찰이나 내면의 성숙을 상징하는 역설적인 표현입니다."
+            },
+            {
+                question: "이 시의 전체적인 주제로 가장 알맞은 것은?",
+                options: ["이별의 슬픔과 그로 인한 좌절", "사랑을 떠나보내고 슬픔을 극복하는 과정과 내면의 성찰", "노동의 신성함과 자연의 아름다움", "만남과 사랑의 기쁨"],
+                answer: "사랑을 떠나보내고 슬픔을 극복하는 과정과 내면의 성찰",
+                explanation: "이 시는 배를 미는 행위를 통해 사랑과의 이별, 슬픔의 극복 과정을 그리고 있으며, 마지막에는 그 경험이 어떻게 내면화되어 성숙으로 이어지는지를 보여줍니다."
+            },
+            {
+                question: "시 전체에 드러나는 화자의 태도로 가장 적절한 것은?",
+                options: ["자신의 감정을 격하게 표출하는 태도", "이별의 상황을 담담하게 관조하고 성찰하는 태도", "현실을 부정하고 과거를 그리워하는 태도", "미래에 대해 막연한 기대를 품는 태도"],
+                answer: "이별의 상황을 담담하게 관조하고 성찰하는 태도",
+                explanation: "화자는 '부드럽게도 떠나지', '잠시 머물다 가라앉고' 등의 표현을 사용하며 이별의 과정을 격한 감정 없이 담담하게 관찰하고 그 의미를 깊이 생각하는 성찰적 태도를 보입니다."
+            },
+            {
+                question: "'밖으로 밀어내는 배'와 '안으로 들어오는 배'의 관계에 대한 설명으로 옳은 것은?",
+                options: ["두 배는 완전히 동일한 대상을 의미한다.", "밖으로 밀어내야만 안으로 들어올 수 있는 역설적 관계이다.", "두 배는 아무런 관련이 없는 별개의 존재이다.", "안으로 들어오는 배가 밖으로 나간 배를 다시 데려온다."],
+                answer: "밖으로 밀어내야만 안으로 들어올 수 있는 역설적 관계이다.",
+                explanation: "사랑이나 슬픔 같은 외적 대상을 의지적으로 밀어냄으로써(이별/극복), 비로소 그 경험이 내면화되어 새로운 깨달음과 성숙('안으로 들어오는 배')이 자리 잡을 수 있다는 역설적인 진리를 보여줍니다."
+            },
+             {
+                question: "'사랑은 참 부드럽게도 떠나지'라는 구절이 시 전체의 맥락에서 가지는 효과는?",
+                options: ["배를 '세게' 미는 행위와 대조를 이루어 이별의 복합적인 감정을 드러낸다.", "사랑이 얼마나 하찮은 것인지를 강조한다.", "떠나간 사랑에 대한 원망을 부드럽게 표현한다.", "이별의 과정이 매우 순조로웠음을 나타낸다."],
+                answer: "배를 '세게' 미는 행위와 대조를 이루어 이별의 복합적인 감정을 드러낸다.",
+                explanation: "사랑의 떠나감 자체는 '부드럽지만', 그것을 밀어내는 행위는 '한껏 세게' 이루어집니다. 이 대조를 통해, 이별을 받아들이는 내면의 상태와 그것을 실행에 옮기는 결단 사이의 복합적인 감정선을 섬세하게 표현합니다."
+            },
+            {
+                question: "시인이 '배를 미는 행위'라는 구체적인 경험을 통해 궁극적으로 말하고자 하는 바는 무엇일까요?",
+                options: ["인생의 모든 것은 힘으로 해결해야 한다.", "구체적인 행위를 통한 추상적인 깨달음의 과정", "바다 여행의 즐거움과 낭만", "이별은 최대한 빨리 잊어야 한다."],
+                answer: "구체적인 행위를 통한 추상적인 깨달음의 과정",
+                explanation: "이 시는 '배를 민다'는 하나의 구체적이고 감각적인 행위를 통해, 눈에 보이지 않는 사랑, 슬픔, 이별, 그리고 내면적 성숙이라는 추상적인 개념들을 성찰하고 깨달아가는 과정을 탁월하게 보여줍니다."
+            }
+        ];
+
+        // DOM 요소 가져오기
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionNumber = document.getElementById('question-number');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackText = document.getElementById('feedback-text');
+        const explanation = document.getElementById('explanation');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreText = document.getElementById('score-text');
+        const retryBtn = document.getElementById('retry-btn');
+        
+        // 퀴즈 상태 변수
+        let currentQuestionIndex = 0;
+        let score = 0;
+        
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizContainer.style.opacity = 1;
+            quizContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            nextBtn.style.display = 'none';
+            feedbackArea.style.display = 'none';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            // 이전 피드백 숨기기
+            feedbackArea.style.display = 'none';
+            nextBtn.style.display = 'none';
+            
+            // 질문 데이터 가져오기
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // 질문 텍스트와 번호 표시
+            questionNumber.textContent = `문제 ${currentQuestionIndex + 1}`;
+            questionText.textContent = currentQuestion.question;
+            
+            // 선택지 초기화
+            optionsContainer.innerHTML = '';
+            
+            // 선택지 버튼 생성
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'w-full', 'p-4', 'border-2', 'rounded-lg', 'text-left', 'bg-white', 'hover:bg-gray-100', 'border-gray-200');
+                button.addEventListener('click', () => selectAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedOption === currentQuestion.answer;
+            
+            if (isCorrect) {
+                score++;
+                feedbackText.textContent = '정답입니다! 🎉';
+                feedbackText.classList.remove('text-red-500');
+                feedbackText.classList.add('text-green-500');
+            } else {
+                feedbackText.textContent = '오답입니다. 😥';
+                feedbackText.classList.remove('text-green-500');
+                feedbackText.classList.add('text-red-500');
+            }
+            
+            explanation.innerHTML = `<strong>해설:</strong> ${currentQuestion.explanation}`;
+            feedbackArea.style.display = 'block';
+
+            // 선택지 버튼 스타일 변경 및 비활성화
+            Array.from(optionsContainer.children).forEach(button => {
+                button.disabled = true;
+                if (button.textContent === currentQuestion.answer) {
+                    button.classList.add('correct');
+                } else if (button.textContent === selectedOption) {
+                    button.classList.add('incorrect');
+                }
+            });
+
+            // 다음 문제 버튼 표시
+            if (currentQuestionIndex < quizData.length - 1) {
+                nextBtn.textContent = '다음 문제';
+            } else {
+                nextBtn.textContent = '결과 보기';
+            }
+            nextBtn.style.display = 'inline-block';
+        }
+        
+        function handleNext() {
+             currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizContainer.style.opacity = 0;
+            setTimeout(() => {
+                quizContainer.style.display = 'none';
+                resultContainer.style.display = 'block';
+                scoreText.textContent = `총 ${quizData.length}문제 중 ${score}문제를 맞혔습니다.`;
+            }, 500);
+        }
+
+        // 이벤트 리스너
+        nextBtn.addEventListener('click', handleNext);
+        retryBtn.addEventListener('click', startQuiz);
+
+        // 퀴즈 시작
+        startQuiz();
+
+    </script>
+</body>
+</html>
+
